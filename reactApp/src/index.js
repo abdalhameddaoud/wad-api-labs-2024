@@ -7,9 +7,10 @@ import MoviesPage from "./pages/moviesPage";
 import { QueryClientProvider, QueryClient } from "react-query";
 import LoginPage from "./pages/loginPage";
 import AuthContextProvider from "./contexts/authContext";
-//import SignUpPage from "./pages/signUpPage";
+import SignUpPage from "./pages/signUpPage";
 import ProtectedRoutes from "./protectedRoutes";
 import Header from "./components/siteHeader";
+
 
 const queryClient = new QueryClient({
   defaultOptions: {
