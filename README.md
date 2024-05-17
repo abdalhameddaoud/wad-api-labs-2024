@@ -1,6 +1,6 @@
 # Assignment 2 - Web API.
 
-Name: Your Name
+Name: Abdalhamed Daoud
 
 ## Features.
 
@@ -9,7 +9,7 @@ A bullet-point list of the ADDITIONAL features you have implemented in the API *
  + Calls routed through new API
  + Top rated movies added to API​
  + Add Authentication
- + + Add Mongose
+ + Add Mongose
   
 ## API Configuration
 In movies-api
