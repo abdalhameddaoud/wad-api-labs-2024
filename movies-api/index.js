@@ -9,7 +9,8 @@ import './seedData';
 import './db';
 import usersRouter from './api/users';
 import session from 'express-session';
-import passport from './authenticate';
+import authenticate from './authenticate';
+
 
 dotenv.config();
 
@@ -26,24 +27,23 @@ const app = express();
 
 const port = process.env.PORT;
 
-app.use(passport.initialize());
+
 
 app.use(express.json());
 
-app.use('/api/movies', passport.authenticate('jwt', { session: false }), moviesRouter);
-
-app.use('/api/actors', passport.authenticate('jwt', { session: false }), actorsRouter);
-
-app.use('/api/upcomingMovies', passport.authenticate('jwt', { session: false }), upcomingMoviesRouter);
-
-app.use('/api/topRatedMovies', passport.authenticate('jwt', { session: false }), topRatedMoviesRouter);
-
+app.use('/api/movies', moviesRouter);
+app.use('/api/actors', actorsRouter);
+app.use('/api/upcomingMovies', upcomingMoviesRouter);
+app.use('/api/topRatedMovies',topRatedMoviesRouter);
 app.use('/api/genres', genresRouter);
-
 app.use('/api/users', usersRouter);
 
 app.use(errHandler);
 
+app.use('/api/movies', moviesRouter);
+
 app.listen(port, () => {
   console.info(`Server running at ${port}`);
 });
+
+app.use('/api/movies',authenticate,  moviesRouter);

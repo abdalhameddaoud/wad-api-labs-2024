@@ -26,32 +26,20 @@ router.put('/:id', async (req, res) => {
 });
 
 // Register OR authenticate a user
-router.post('/', asyncHandler(async (req, res, next) => {
-    if (!req.body.username || !req.body.password) {
-        res.status(401).json({ success: false, msg: 'Please pass username and password.' });
-        return next();
-    }
-    if (req.query.action === 'register') {
-        const format = new RegExp("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{5,}$");
-        if (!format.test(req.body.password)) {
-            res.status(401).json({ success: false, msg: 'Password must be at least 5 characters long and contain at least one letter and one number.' });
-            return next();
+router.post('/', asyncHandler(async (req, res) => {
+    try {
+        if (!req.body.username || !req.body.password) {
+            return res.status(400).json({ success: false, msg: 'Username and password are required.' });
         }
-        await User.create(req.body);
-        res.status(201).json({ code: 201, msg: 'Successful created new user.' });
-    } else {
-        const user = await User.findByUserName(req.body.username);
-        if (!user) return res.status(401).json({ code: 401, msg: 'Authentication failed. User not found.' });
-        user.comparePassword(req.body.password, (err, isMatch) => {
-            if (isMatch && !err) {
-                // if user is found and password matches, create a token
-                const token = jwt.sign(user.username, process.env.SECRET);
-                // return the information including token as JSON
-                res.status(200).json({ success: true, token: 'BEARER ' + token });
-            } else {
-                res.status(401).json({ code: 401, msg: 'Authentication failed. Wrong password.' });
-            }
-        });
+        if (req.query.action === 'register') {
+            await registerUser(req, res);
+        } else {
+            await authenticateUser(req, res);
+        }
+    } catch (error) {
+        // Log the error and return a generic error message
+        console.error(error);
+        res.status(500).json({ success: false, msg: 'Internal server error.' });
     }
 }));
 
@@ -94,5 +82,31 @@ router.post('/', async (req, res) => {
         }
     }
 });
+
+
+async function registerUser(req, res) {
+    // Add input validation logic here
+    await User.create(req.body);
+    res.status(201).json({ success: true, msg: 'User successfully created.' });
+}
+
+async function authenticateUser(req, res) {
+    const user = await User.findByUserName(req.body.username);
+    if (!user) {
+        return res.status(401).json({ success: false, msg: 'Authentication failed. User not found.' });
+    }
+
+    const isMatch = await user.comparePassword(req.body.password);
+    if (isMatch) {
+        const token = jwt.sign({ username: user.username }, process.env.SECRET);
+        res.status(200).json({ success: true, token: 'BEARER ' + token });
+    } else {
+        res.status(401).json({ success: false, msg: 'Wrong password.' });
+    }
+}
+
+
+
+
 
 export default router;

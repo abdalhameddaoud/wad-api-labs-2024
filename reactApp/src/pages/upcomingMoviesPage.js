@@ -1,4 +1,4 @@
-//https://api.themoviedb.org/3/movie/upcoming?api_key=…your-key…&language=en-US&page=1
+
 import React from "react";
 import { getUpcomingMovies } from "../api/movies-api";
 import PageTemplate from '../components/movieComponents/templateMovieListPage';
@@ -24,7 +24,7 @@ const UpcomingMoviesPage = (props) => {
   }
   const movies = data.results;
 
-  // Redundant, but necessary to avoid app crashing.
+
   const mustWatch = movies.filter(m => m.mustWatch)
   localStorage.setItem('mustWatch', JSON.stringify(mustWatch))
 
